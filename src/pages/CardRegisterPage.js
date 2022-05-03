@@ -16,12 +16,19 @@ import { PageTitle } from '../components/common/PageTitle';
 import { ModalSelector } from '../components/common/ModalSelector';
 import { useModalSelector } from '../hooks/useModalSelector';
 import { CardPreview } from '../components/CardRegister/CardPreview';
+import {
+  isValidCardNumbersInput,
+  isValidCVCInput,
+  isValidExpireDateInput,
+  isValidPasswordInput,
+} from '../utils/validators/cardInput';
 
 export const CardRegisterPage = () => {
   const [cardInfo, dispatch] = useReducer(cardInfoReducer, initialCardInfo);
 
   const [openedModalComponent, openModal, closeModal] = useModalSelector();
 
+  const [allCompleted, setAllCompleted] = useState(false);
   const [checkInputCompleted, setCheckInputCompleted] = useState({
     cardNumbers: false,
     cardExpireDate: false,
@@ -30,13 +37,42 @@ export const CardRegisterPage = () => {
     cardType: false,
   });
 
-  const [allCompleted, setAllCompleted] = useState(false);
+  useEffect(() => {
+    const isCompleted = isValidCardNumbersInput(cardInfo.cardNumbers);
+    if (isCompleted === checkInputCompleted[COMPONENTS.NUMBERS]) {
+      return;
+    }
 
-  const checkerFactory = (subject) => {
-    return (isCompleted) => {
-      setCheckInputCompleted((prev) => ({ ...prev, [subject]: isCompleted }));
-    };
-  };
+    setCheckInputCompleted((prev) => ({
+      ...prev,
+      [COMPONENTS.NUMBERS]: isCompleted,
+    }));
+
+    if (isCompleted) {
+      openModal(COMPONENTS.CARD_TYPE);
+    }
+  }, [cardInfo.cardNumbers]);
+
+  useEffect(() => {
+    setCheckInputCompleted((prev) => ({
+      ...prev,
+      [COMPONENTS.EXPIRE_DATE]: isValidExpireDateInput(cardInfo.expireDate),
+    }));
+  }, [cardInfo.expireDate]);
+
+  useEffect(() => {
+    setCheckInputCompleted((prev) => ({
+      ...prev,
+      [COMPONENTS.PASSWORD]: isValidPasswordInput(cardInfo.password),
+    }));
+  }, [cardInfo.password]);
+
+  useEffect(() => {
+    setCheckInputCompleted((prev) => ({
+      ...prev,
+      [COMPONENTS.CVC]: isValidCVCInput(cardInfo.CVC),
+    }));
+  }, [cardInfo.CVC]);
 
   useEffect(() => {
     setAllCompleted(Object.values(checkInputCompleted).every((check) => check));
@@ -53,13 +89,10 @@ export const CardRegisterPage = () => {
         cardType={cardInfo.cardType}
         cardNumbers={cardInfo.cardNumbers}
         onCardNumbersInput={dispatch}
-        onCardNumberCheck={checkerFactory(COMPONENTS.NUMBERS)}
-        openModal={() => openModal(COMPONENTS.CARD_TYPE)}
       />
       <CardExpireDateInputForm
         expireDate={cardInfo.expireDate}
         onExpireDateInput={dispatch}
-        onCardExpireCheck={checkerFactory(COMPONENTS.EXPIRE_DATE)}
       />
       <CardOwnerInputForm
         ownerName={cardInfo.ownerName}
@@ -68,13 +101,11 @@ export const CardRegisterPage = () => {
       <CVCInputForm
         CVC={cardInfo.CVC}
         onCVCInput={dispatch}
-        onCardCVCCheck={checkerFactory(COMPONENTS.CVC)}
         openModal={() => openModal(COMPONENTS.CVC)}
       />
       <CardPasswordInputForm
         password={cardInfo.password}
         onPasswordInput={dispatch}
-        onCardPasswordCheck={checkerFactory(COMPONENTS.PASSWORD)}
       />
       <ModalSelector selected={openedModalComponent} closeModal={closeModal}>
         <CardSelectModal
@@ -82,7 +113,6 @@ export const CardRegisterPage = () => {
           cardTypes={CARD_TYPES}
           closeModal={closeModal}
           onCardType={dispatch}
-          onCardTypeCheck={checkerFactory(COMPONENTS.CARD_TYPE)}
         />
         <CVCHelperModal name={COMPONENTS.CVC} />
       </ModalSelector>

@@ -18,13 +18,7 @@ const DEFAULT_CARD_NUMBERS_TYPE = [
   { name: 'fourthNumber', type: 'password' },
 ];
 
-export const CardNumbersInputForm = ({
-  cardType,
-  cardNumbers,
-  onCardNumbersInput,
-  onCardNumberCheck,
-  openModal,
-}) => {
+export const CardNumbersInputForm = ({ cardNumbers, onCardNumbersInput }) => {
   const handleNumberChange = (e, name) => {
     if (
       isNaN(e.nativeEvent.data) ||
@@ -38,18 +32,6 @@ export const CardNumbersInputForm = ({
       payload: { key: name, cardNumber: e.target.value },
     });
   };
-
-  useEffect(() => {
-    const isCardNumbersCompleted = Object.values(cardNumbers).every(
-      (number) => number.length === MAX_LENGTH.EACH_CARD_NUMBER
-    );
-
-    onCardNumberCheck(isCardNumbersCompleted);
-
-    if (cardType.name === '' && isCardNumbersCompleted) {
-      openModal();
-    }
-  }, [cardNumbers]);
 
   return (
     <InputContainer>

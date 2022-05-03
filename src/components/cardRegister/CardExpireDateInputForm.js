@@ -15,11 +15,7 @@ const isInputValueFilledWithZero = (e) =>
   e.target.value.length === 2 &&
   parseInt(e.target.value) < 1;
 
-export const CardExpireDateInputForm = ({
-  expireDate,
-  onExpireDateInput,
-  onCardExpireCheck,
-}) => {
+export const CardExpireDateInputForm = ({ expireDate, onExpireDateInput }) => {
   const handleMonthInput = (e) => {
     if (e.target.value.length > 2) {
       return;
@@ -49,37 +45,6 @@ export const CardExpireDateInputForm = ({
       payload: { key: 'year', date: e.target.value },
     });
   };
-
-  useEffect(() => {
-    if (expireDate.year === '' || expireDate.month === '') {
-      return;
-    }
-
-    const isCardExpireDateCompleted = () => {
-      const currentDate = new Date();
-      const currentYear = String(currentDate.getFullYear()).slice(2, 4);
-      const currentMonth = currentDate.getMonth() + 1;
-
-      if (parseInt(expireDate.year) < parseInt(currentYear)) {
-        return false;
-      }
-
-      if (
-        expireDate.year === currentYear &&
-        parseInt(expireDate.month) < currentMonth
-      ) {
-        return false;
-      }
-
-      if (parseInt(expireDate.month) > 12 || parseInt(expireDate.month) < 1) {
-        return false;
-      }
-
-      return true;
-    };
-
-    onCardExpireCheck(isCardExpireDateCompleted());
-  }, [expireDate]);
 
   return (
     <InputContainer>

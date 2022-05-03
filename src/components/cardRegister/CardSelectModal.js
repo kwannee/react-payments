@@ -4,6 +4,31 @@ import { CARD_INFO_TYPES } from '../../reducer/types';
 
 import styled from 'styled-components';
 
+export const CardSelectModal = ({ cardTypes, onCardType, closeModal }) => {
+  const handleCardTypeSelect = (cardType) => {
+    onCardType({
+      type: CARD_INFO_TYPES.SET_CARD_TYPE,
+      payload: { cardType },
+    });
+
+    closeModal();
+  };
+
+  return (
+    <GridColumnsStyle col={4}>
+      {cardTypes.map((card) => (
+        <ModalItemContainerStyle
+          key={card.name}
+          onClick={() => handleCardTypeSelect(card)}
+        >
+          <ModalItemDotStyle backgroundColor={card.color} />
+          <ModalItemNameStyle>{card.name} 카드</ModalItemNameStyle>
+        </ModalItemContainerStyle>
+      ))}
+    </GridColumnsStyle>
+  );
+};
+
 const GridColumnsStyle = styled.div`
   display: grid;
   justify-content: center;
@@ -30,33 +55,3 @@ const ModalItemNameStyle = styled.span`
   letter-spacing: -0.085rem;
   cursor: pointer;
 `;
-
-export const CardSelectModal = ({
-  cardTypes,
-  closeModal,
-  onCardType,
-  onCardTypeCheck,
-}) => {
-  const handleCardTypeSelect = (cardType) => {
-    onCardType({
-      type: CARD_INFO_TYPES.SET_CARD_TYPE,
-      payload: { cardType },
-    });
-    onCardTypeCheck(true);
-    closeModal();
-  };
-
-  return (
-    <GridColumnsStyle col={4}>
-      {cardTypes.map((card) => (
-        <ModalItemContainerStyle
-          key={card.name}
-          onClick={() => handleCardTypeSelect(card)}
-        >
-          <ModalItemDotStyle backgroundColor={card.color} />
-          <ModalItemNameStyle>{card.name} 카드</ModalItemNameStyle>
-        </ModalItemContainerStyle>
-      ))}
-    </GridColumnsStyle>
-  );
-};

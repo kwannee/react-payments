@@ -11,11 +11,7 @@ import {
 import Dot from '../common/Dot';
 import { AutoFocusInputContainer } from '../common/AutoFocusInputContainer';
 
-export const CardPasswordInputForm = ({
-  password,
-  onPasswordInput,
-  onCardPasswordCheck,
-}) => {
+export const CardPasswordInputForm = ({ password, onPasswordInput }) => {
   const handlePasswordChange = (e, name) => {
     if (isNaN(e.nativeEvent.data) || e.target.value.length > 1) {
       return;
@@ -26,14 +22,6 @@ export const CardPasswordInputForm = ({
       payload: { key: name, password: e.nativeEvent.data },
     });
   };
-
-  useEffect(() => {
-    const isCompletePassword = Object.values(password).every(
-      (number) => number
-    );
-
-    onCardPasswordCheck(isCompletePassword);
-  }, [password]);
 
   return (
     <InputContainer>
